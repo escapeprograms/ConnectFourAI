@@ -1,0 +1,179 @@
+//neural network bot
+var math = require('mathjs');
+var game = require("./game.js");
+var c = require("./convolution.js")
+var _ = require("lodash");
+
+var layerSize = [131,20,7];//layers for neurons
+var mutRate = 0.06;//mutation chance
+var mutAmount = 0.1;//mutation amount
+
+var filterlist = [
+  [[1,1]],
+  [[1],[1]],
+  [[0,1],[1,0]],
+  [[1,0],[0,1]]
+];
+
+//fitness calculation
+var calcFit = function(movesToWin,winner){
+  var winnerScore = 0;
+  if (winner==0) winnerScore = 100;
+  return winnerScore;
+}
+
+//create zeros matrix with size x,y
+function zerosM(x,y) {
+  if (!y) y = 1;
+  var arr = [];
+  for (var i = 0; i < x; i++){
+    var row = [];
+    for (var j = 0; j < y; j++){
+      //row.push(Math.random()/4);
+      row.push(0)
+    }
+    if (x == 1) return row;//return a single row if x = 1
+    arr.push(row)
+  }
+  return arr;
+}
+
+var Bot = function(id, network) {
+  this.id = id;
+  //default weight setup
+  this.weights = [];
+  this.bias = [];
+  var w, b;
+  if (network) {
+    w = network.weights;
+    b = network.bias;
+  }
+  for (var i = 0; i < layerSize.length-1; i++){
+    //weights
+    if (!w){
+      this.weights.push(zerosM(layerSize[i], layerSize[i+1]));
+    }
+    else {
+      this.weights.push(w[i]);//transfer weights
+    }
+    //biases (shifted 1 layer)
+    if (!b){
+      this.bias.push(zerosM(1, layerSize[i+1]));
+    }
+    else {
+      this.bias.push(b[i]);//transfer bias
+    }
+  }
+  //transfered weights
+  //if (weights) this.weights = [weights][0];
+};
+
+//mutate weights
+Bot.prototype.mutateWeights = function() {
+  for (var a = 0; a < this.weights.length; a++){//layer
+  for (var b = 0; b < this.weights[a].length; b++){//node
+  for (var c = 0; c < this.weights[a][b].length; c++){//weight
+    if (Math.random() < mutRate) {
+      this.weights[a][b][c] += -(Math.random()*mutAmount) + mutAmount/2;
+      //mutate weight
+      if (Math.random() < mutRate*2) {
+        this.weights[a][b][c] = 0;//clear weight chance
+      }
+    }
+  }
+  }
+  }
+}
+Bot.prototype.mutateBiases = function() {
+  for (var a = 0; a < this.bias.length; a++){//layer
+  for (var b = 0; b < this.bias[a].length; b++){//bias
+    if (Math.random() < mutRate) {
+      this.bias[a][b] += -(Math.random()*mutAmount) + mutAmount/2;
+      //mutate weight
+      if (Math.random() < mutRate*2) {
+        this.bias[a][b] = 0;//clear bias chance
+      }
+    }
+  }
+  }
+}
+
+//activate sigmoid function
+Bot.prototype.sigmoid = function(Z) {
+  var A = [];
+  for (var i = 0; i < Z.length; i++) {
+    A.push(1/(1 + Math.pow(Math.E,-Z[i])));
+  }
+  return A;
+}
+//recursive forward propagation
+Bot.prototype.forward = function(input,n) {
+  if (!n) n = 0;
+  if (n >= this.weights.length) return input
+    //return this.sigmoid(input);
+  var X = math.matrix(input);
+  var W = math.matrix(this.weights[n]);
+  var Z = math.add(math.multiply(X,W),this.bias[n]).valueOf();
+  //relu
+  /*for (var i = 0; i < Z.length; i++) {
+    if (Z[i] < 0) Z[i] = 0;
+  }*/
+  return this.forward(Z,n+1);
+}
+
+//calculate the bot's move
+Bot.prototype.respond = function(board) {
+  //convolutions
+  var convBoard = c.convolve(board,filterlist);
+  //console.log(math.flatten(convBoard).length);
+  var f = this.forward(math.flatten(convBoard));
+  var maxResponse = 0;
+  var decision = 0;
+  choice:for (var i = 0; i < f.length; i++) {
+    if (f[i] >= maxResponse) {
+      //check legality of move
+      if (board[0][i] != -1) continue choice;
+      decision = i;
+      maxResponse = f[i];
+    }
+  }
+  return decision;
+}
+
+//Simulate a game of 2 bots
+var maxMoves = 42;
+var Simulation = function(pos,network1,network2){
+  this.fit = 0;//fitness score
+  //bots must control players "1" and "2"
+  this.results = [];//returns with winner's weights and score
+  this.winner = -1;  
+  this.bots = [new Bot("mutated",network1), new Bot("control",network2)];
+  this.game = new game.Game();
+}
+//mutate first bots
+Simulation.prototype.mutate = function() {
+  this.bots[0].mutateWeights();
+  this.bots[0].mutateBiases();
+}
+
+Simulation.prototype.runMoves = function() {
+  console.log("Sim started")
+  while (!this.game.gameOver && this.game.totalMoves < maxMoves) {
+    this.bots.forEach((b,i)=>{
+      this.game.move(i,b.respond(this.game.showPlayer(i)))
+    });
+  }
+  this.endSim();
+  console.log("sim finished")
+}
+
+//end sim
+Simulation.prototype.endSim = function() {
+  console.log("done sim")
+  this.game.gameOver = true;//force end game
+  var fit = calcFit(this.game.totalMoves, this.game.winner);
+  this.results = {weights:this.bots[0].weights,bias:this.bots[0].bias,fit:fit};
+  console.log("Complete: "+fit)
+}
+
+module.exports = {Bot, Simulation};
