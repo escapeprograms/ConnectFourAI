@@ -38,7 +38,8 @@ layerSize[0] = 2*math.flatten(testBoard).length
 var calcFit = function(movesToWin,winner){
   var winnerScore = 0;
   var timeBonus = 0;
-  if (movesToWin > 10) timeBonus = 50 - movesToWin;
+  //if (movesToWin > 10) timeBonus = 50 - movesToWin;
+  timeBonus = -movesToWin;
   if (winner==0) winnerScore = 100;
   return winnerScore + timeBonus;
 }

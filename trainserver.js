@@ -89,12 +89,12 @@ function startSims(results) {
       var n2 = Math.floor(Math.random()*best.length);
       var weightPair = crossOver(best[n].weights, best[n2].weights);
       var biasPair = crossOver(best[n].bias,best[n2].bias);
-      sims.push(_.cloneDeep(new ai.Simulation({
+      sims.push(_.cloneDeep(new ai.Simulation(controlSim, {
         weights:weightPair[0],
-        bias:biasPair[0]}, controlSim)));
-      sims.push(_.cloneDeep(new ai.Simulation({
+        bias:biasPair[0]})));
+      sims.push(_.cloneDeep(new ai.Simulation(controlSim, {
         weights:weightPair[1],
-        bias:biasPair[1]}, controlSim)));
+        bias:biasPair[1]})));
       sims[i].mutate();
       sims[i + 1].mutate();
     }
@@ -103,9 +103,9 @@ function startSims(results) {
     //populate bots normally
     for (var i = 0; i < numSims/2; i++) {
       var n = Math.floor(Math.random()*best.length);
-      sims.push(_.cloneDeep(new ai.Simulation({
+      sims.push(_.cloneDeep(new ai.Simulation(controlSim, {
         weights:best[n].weights,
-        bias:best[n].bias}, controlSim)));
+        bias:best[n].bias})));
       sims[i].mutate();
     }
     return sims;
