@@ -3,7 +3,8 @@ const c = require("./convolution.js");
 var boardWidth = 7;
 var boardHeight = 6;
 
-function Game() {
+function Game(id) {
+  this.id = id;//for server use
   this.board = [];
   this.turn = 0;
   this.gameOver = false;
@@ -28,7 +29,12 @@ Game.prototype.move = function(player, col) {
   for (var i = 0; i < column.length; i++) {
     //place chip in the first empty space
     if (column[i] != -1) {
-      if (i == 0) return; //stop if invalid move
+      if (i == 0) {
+        console.log("invalid move "+col)
+        //console.log(this.showPlayer(0)[0][col]);
+        //console.log(this.showPlayer(1)[0][col]);
+        return; //stop if invalid move
+      }
       column[i-1] = player;
       break;
     }
@@ -92,12 +98,12 @@ Game.prototype.getBoard = function() {
 
 //show player's persepective (for AI input)
 Game.prototype.showPlayer = function(player) {
-  var arr = this.getBoard();
+  var arr = this.getBoard(); //[row][col]
   for (var i = 0; i < arr.length; i++) {
     for (var j = 0; j < arr[0].length; j++) {
-      if (arr[i][j] == -1) arr[i][j] = 0;
-      else if (arr[i][j] != player) arr[i][j] = -1;
-      else arr[i][j] = 1;
+      if (arr[i][j] == -1) arr[i][j] = 0; //air
+      else if (arr[i][j] != player) arr[i][j] = -1; //enemy
+      else arr[i][j] = 1; //ally
     }
   }
   //board states: 0 = empty, 1 = player, -1 = other player

@@ -17,6 +17,18 @@ function convolve(arr, kernels) {
   });
   return output;
 }
+//no longer exponential, its cubic
+function convolveExp(arr, kernels) {
+  var a = convolve(arr, kernels);
+  for (var i = 0; i < a.length; i++) {
+    for (var y = 0; y < a[i].length; y++) {
+      for (var x = 0; x < a[i][y].length; x++) {
+        a[i][y][x] = Math.pow(a[i][y][x], 3)
+      }
+    }
+  }
+  return a;
+}
 
 //get the piece of array to apply kernel too (indexed by top left)
 function getSection(arr, x, y, w, h) {
@@ -41,4 +53,4 @@ function applyKernel(arr, kernel) {
   return sum;
 }
 
-module.exports = {convolve}
+module.exports = {convolve, convolveExp}

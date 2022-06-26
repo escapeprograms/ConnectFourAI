@@ -1,0 +1,119 @@
+*{
+  font-family: 'Noto serif', serif;
+}
+body {
+  overflow:hidden;
+}
+h1 {
+  font-size: 70px;
+  text-align: center;
+}
+#title {
+  animation: fade-in 0.6s ease-in-out;
+}
+#description-container {
+  width:50%;
+  margin:auto;
+}
+/* gameboard */
+.centered {
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+#game-container {
+  background-color:rgb(0, 157, 255);
+  display:none;
+  animation: fade-in-fast 1s ease-in-out;
+}
+
+.dot {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  display: inline-block;
+  margin:10px;
+  border: 2px solid black;
+}
+.dot:hover {
+  cursor:pointer;
+}
+.red {
+  background-color:rgb(255,0,0);
+}
+.yellow {
+  background-color:rgb(255, 255, 0);
+}
+.gray {
+  background-color:rgb(125,125,125);
+}
+
+#win-loss {
+  display:none;
+  animation: fade-in-fast 1s ease-in-out;
+}
+
+
+#button-container {
+  text-align:center;
+  padding:30px;
+}
+
+button {
+	width:200px;
+	padding: 15px 0;
+	text-align:center;
+	border-radius:5px;
+font-weight:bold;
+border: 2px solid black;
+background:transparent;
+color: black;
+cursor: pointer;
+  font-size:19px;
+}
+button:hover {
+  transition:0.5s;
+  color:rgb(255, 255, 255);
+  background-color:rgb(0, 157, 255);
+}
+
+/* animations */
+.hidden {
+  display:none;
+}
+.fade {
+  animation: fade-in 0.9s ease-in-out;
+}
+.fade-out {
+  animation: fade-out 0.3s ease-out;
+  opacity:0;
+}
+@keyframes fade-in {
+  0% {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fade-in-fast {
+  0% {
+    transform: translateY(1000px);
+    opacity:0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity:1;
+  }
+}

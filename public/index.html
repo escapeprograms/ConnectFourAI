@@ -4,10 +4,32 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <title>Connect Four AI</title>
 </head>
 <body>
+  <h1 id="title">Connect <span style="color:red">Four</span> <span style="color:rgb(0, 157, 255)">AI</span></h1>
+  <div id="description-container" class="fade hidden">
+    <p>
+      Whether it be Grad Nite, End-of-Year Parties, or College Orientation, the party game classic Connect Four is always there.  And every time, I trusted my quick thinking and logic skills to bring me to a Connect Four victory.  (Needless to say, I lost every time.)  But this hackathon was my chance at redemption; I would finally defeat my nemesis.  Using <strong>Neural Networks, Convolutions, and Genetic Algorithms</strong>, I finally have beaten the game that has tormented me for so many weeks!
+    </p>
+  </div>
+  <div id="button-container">
+    <button id="game-btn" class="fade hidden">Click to Play</button>
+  </div>
+  <div class="centered">
+    <div id="game-container"></div>
+    <div id="win-loss">
+      <h2 id="winner">You Win!</h2>
+      <a href="/"><button>Play Again?</button></a>
+    </div>
+  </div>
   <canvas id="canvas"></canvas>
+  <script src="animatecss.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
